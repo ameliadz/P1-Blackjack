@@ -8,14 +8,14 @@ Technologies to utilize:<br>
 HTML, CSS, JS. Objects, click events, DOM manipulations, so many comparisons.
 <br>
 
-Anticipated problems:<br>
+Anticipated problems:
   1) Conditionally valuing aces as either 11 or 1.
   2) Splitting cards
   3) Insurance
   4) Not running through the whole deck
 <br>
 
-Potential solutions to the above problems:<br>
+Potential solutions to the above problems:
   1) Conditionals. Would the total score w/ ace as 11 be more than 21? If yes, ace = 1. Else, ace = 11.
   2) Put one aside somehow (move it? gray out?) and deal another with the same bet on it. Then compare both to dealer's hand in turn. Maybe active hands can be an array or something and I can loop through the length??
   3) If dealer has an ace *showing* (not facedown card... so check that) offer insurance. If insurance is taken, and dealer has blackjack, player wins their insurance bet 2:1. If not, they lose that bet. If insurance isn't taken, do nothing.
