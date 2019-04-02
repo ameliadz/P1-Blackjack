@@ -238,6 +238,8 @@ const checkWinner = () => {
   };
   playerScore = 0;
   dealerScore = 0;
+  totalBet = 0;
+  betAmtDisplay.textContent = `bet $${totalBet}`;
   hitBtn.classList.add('hidden');
   standBtn.classList.add('hidden');
   clearBtn.disabled = false;
