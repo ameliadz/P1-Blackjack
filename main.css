@@ -6,10 +6,40 @@ body {
 }
 
 .game-table {
+  display: grid;
+  grid-template-columns: 1fr 3fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  grid-template-areas:
+    "dealer dealer bet"
+    "player player bet";
   width: 80%;
   max-width: 1000px;
   margin: 0 auto;
   text-align: center;
+}
+
+.dealer p, .player p {
+  display: inline-block;
+  flex: 1;
+}
+
+.dealer {
+  grid-area: dealer;
+}
+
+.player {
+  grid-area: player;
+}
+
+.dealer, .player {
+  justify-content: center;
+  display: grid;
+  grid-template-columns: 1fr 4fr;
+  align-items: center;
+}
+
+.bet {
+  grid-area: bet;
 }
 
 img {
@@ -18,16 +48,8 @@ img {
   margin: 0 auto;
 }
 
-.dealer, .player {
-  display: grid;
-  justify-content: space-between;
-  align-items: center;
-  grid-template-columns: 0.5fr 2fr;
-}
-
 .dealer-cards, .player-cards {
   display: flex;
-  justify-content: flex-start;
 }
 
 p {
@@ -41,12 +63,4 @@ p {
 button {
   margin: 10px;
   font-size: 10pt;
-}
-
-.question-btns {
-  display: none;
-}
-
-.bet {
-  border: 1px solid white;
 }

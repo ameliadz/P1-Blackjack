@@ -1,9 +1,7 @@
 //grabbing DOM elements
 const table = document.querySelector('.game-table');
 const dealerCards = document.querySelector('.dealer-cards');
-const dealerImg = document.querySelector('#dealer');
 const playerCards = document.querySelector('.player-cards');
-const playerImg = document.querySelector('#player');
 //const dealBtn = document.querySelector('#deal');
 const hitBtn = document.querySelector('#hit');
 const standBtn = document.querySelector('#stand');
@@ -113,18 +111,18 @@ const showScore = (hand, score, p) => {
 //placeholder functions/buttons for later features
 const offerInsurance = () => {
   if (dealerHand[1].num === 'A') {
-    insuranceBtn.style.display = 'inline-block';
+    insuranceBtn.classList.remove('hidden');
   };
 }
 
 const offerSplit = () => {
   if (playerHand[0].num === playerHand[1].num) {
-    splitBtn.style.display = 'inline-block';
+    splitBtn.classList.remove('hidden');
   };
 }
 
 const offerDouble = () => {
-  doubleBtn.style.display = 'inline-block';
+  doubleBtn.classList.remove('hidden');
 }
 
 //deal
@@ -157,8 +155,6 @@ const deal = () => {
 
   return deck;
 };
-
-document.querySelector('#deal').addEventListener('click', deal);
 
 //setting up win evaluation and payout
 const payout = condition => {
@@ -228,9 +224,9 @@ const hit = (hand, div) => {
     deck.splice(deck.indexOf(newCard), 1);
     hand.push(newCard);
     display(hand, div);
-    doubleBtn.style.display = 'none';
-    insuranceBtn.style.display = 'none';
-    splitBtn.style.display = 'none';
+    doubleBtn.classList.add('hidden');
+    insuranceBtn.classList.add('hidden');
+    splitBtn.classList.add('hidden');
 };
 
 const hitPlayer= () => {
@@ -306,13 +302,13 @@ betNums.forEach(square => {
 
 //placeholder functions for later features
 insuranceBtn.addEventListener('click', function() {
-  insuranceBtn.style.display = 'none';
+  insuranceBtn.classList.add('hidden');
 });
 
 splitBtn.addEventListener('click', function() {
-  splitBtn.style.display = 'none';
+  splitBtn.classList.add('hidden');
 });
 
 doubleBtn.addEventListener('click', function() {
-  doubleBtn.style.display = 'none';
+  doubleBtn.classList.add('hidden');
 })
