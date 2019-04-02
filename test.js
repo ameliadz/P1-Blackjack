@@ -21,7 +21,7 @@ const insuranceDisplay = document.querySelector('.insurance');
 //setting up variables
 let dealerHand = [];
 let playerHand = [];
-let dealerBlackjack;
+let dealerBlackjack = null;
 let dealerScore = 0;
 let playerScore = 0;
 let pot = 100;
@@ -181,6 +181,7 @@ const payout = condition => {
     case 'insurance':
       pot += 2 * insuranceBet;
       potDisplay.textContent = `Pot: $${pot}`;
+      insuranceDisplay.textContent = '';
     case 'loss':
       potDisplay.textContent = `Pot: $${pot}`;
       console.log(pot);
@@ -234,7 +235,7 @@ const checkWinner = () => {
   if (dealerBlackjack) {
     console.log(`insurance`);
     payout('insurance');
-  }
+  };
   playerScore = 0;
   dealerScore = 0;
   hitBtn.classList.add('hidden');
@@ -266,9 +267,6 @@ const hitPlayer= () => {
     checkWinner();
   }
   showScore(playerHand, playerScore, pScoreDisplay);
-  // insuranceBtn.disabled = true;
-  // splitBtn.disabled = true;
-  // doubleBtn.disabled = true;
 }
 
 const hitDealer = () => {
@@ -294,6 +292,8 @@ const bet = (e) => {
   let amtBet = Number(e.target.dataset.amt);
   totalBet += amtBet;
   betAmtDisplay.textContent = `bet $${totalBet}`;
+  pot -= totalBet;
+  potDisplay.textContent = `Pot: $${pot}`;
   if (!totalBet > 0) {
     betBtn.disabled = true;
   } else {
@@ -303,8 +303,6 @@ const bet = (e) => {
 }
 
 const setBet = () => {
-  pot -= totalBet;
-  potDisplay.textContent = `Pot: $${pot}`;
   if (totalBet > 0) {
     //dealBtn.disabled = false;
     hitBtn.disabled = false;
@@ -325,16 +323,19 @@ const clearBet = () => {
 betBtn.addEventListener('click', setBet);
 clearBtn.addEventListener('click', clearBet);
 
-betNums.forEach(square => {
-  square.addEventListener('click', bet);
+betNums.forEach(button => {
+  button.addEventListener('click', bet);
 });
 
 const insurance = () => {
   insuranceBet = totalBet / 2;
+  pot -= insuranceBet;
   if (String(insuranceBet).includes('.')) {
-    insuranceDisplay.textContent = `Insurance: $${insuranceBet}0`
+    insuranceDisplay.textContent = `Insurance: $${insuranceBet}0`;
+    potDisplay.textContent = `Pot: $${pot}0`;
   } else {
     insuranceDisplay.textContent = `Insurance: $${insuranceBet} `;
+    potDisplay.textContent = `Pot: $${pot}`;
   }
   if (dealerHand.length === 2 && ((dealerHand[0].value === 10 && dealerHand[1].value === 11) || (dealerHand[0].value === 11 && dealerHand[1].value === 10))) {
     dealerBlackjack = true;
@@ -342,13 +343,21 @@ const insurance = () => {
   insuranceBtn.classList.add('hidden');
 }
 
-//placeholder functions for later features
-insuranceBtn.addEventListener('click', insurance);
+const doubleDown = () => {
+  pot -= totalBet;
+  totalBet = totalBet * 2;
+  potDisplay.textContent = `Pot: $${pot}`;
+  betAmtDisplay.textContent = `bet $${totalBet}`;
+  doubleBtn.classList.add('hidden');
+  hit(playerHand, playerCards);
+  checkWinner();
+}
 
+insuranceBtn.addEventListener('click', insurance);
+doubleBtn.addEventListener('click', doubleDown);
+
+
+//placeholder for later features
 splitBtn.addEventListener('click', function() {
   splitBtn.classList.add('hidden');
 });
-
-doubleBtn.addEventListener('click', function() {
-  doubleBtn.classList.add('hidden');
-})

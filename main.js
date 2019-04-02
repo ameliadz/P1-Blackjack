@@ -21,11 +21,12 @@ const insuranceDisplay = document.querySelector('.insurance');
 //setting up variables
 let dealerHand = [];
 let playerHand = [];
-let dealerBlackjack;
+let dealerBlackjack = null;
 let dealerScore = 0;
 let playerScore = 0;
 let pot = 100;
 let totalBet = 0;
+let insuranceBet = 0;
 const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King', 'Ace'];
 const suits = ['Clubs', 'Diamonds', 'Hearts', 'Spades'];
 let deck = [];
@@ -100,35 +101,18 @@ const valueAces = (hand, score) => {
       };
     };
   };
-  console.log(score);
   return score;
 }
 
 const getScore = (hand, score) => {
   for (let i = 0; i < hand.length; i++) {
     score += hand[i].value;
-    if (score > 20) {
-      valueAces(hand, score);
+    if (score > 21) {
+      score = valueAces(hand, score);
     }
   }
   return score;
 }
-
-// const getScore = (hand, score) => {
-//   for (let i = 0; i < hand.length; i++) {
-//     score += hand[i].value;
-//     if (score > 21) {
-//       if (hand[i].value === 11) {
-//         score = 0;
-//         hand[i].value = 1;
-//         getScore(hand, score);
-//         // does not retroactively change Ace if it would be changed with a different draw order though. e.g., 4, 2, A, K counts as 27 when i think it should probably switch to 17 but maybe i should check with nana.
-//         // should i maybe make the ace revaluing a separate function?
-//       }
-//     }
-//   }
-//   return score;
-// }
 
 const showScore = (hand, score, p) => {
   p.textContent = `${getScore(hand, score)}`;
@@ -139,17 +123,20 @@ const showScore = (hand, score, p) => {
 const offerInsurance = () => {
   if (dealerHand[1].num === 'Ace') {
     insuranceBtn.classList.remove('hidden');
+    insuranceBtn.disabled = false;
   };
 }
 
 const offerSplit = () => {
   if (playerHand[0].num === playerHand[1].num) {
     splitBtn.classList.remove('hidden');
+    splitBtn.disabled = false;
   };
-}
+};
 
 const offerDouble = () => {
   doubleBtn.classList.remove('hidden');
+  doubleBtn.disabled = false;
 }
 
 //deal
@@ -192,10 +179,10 @@ const deal = () => {
 const payout = condition => {
   switch (condition) {
     case 'insurance':
-      pot += 2 * totalBet;
+      pot += 2 * insuranceBet;
       potDisplay.textContent = `Pot: $${pot}`;
+      insuranceDisplay.textContent = '';
     case 'loss':
-      //pot += totalBet;
       potDisplay.textContent = `Pot: $${pot}`;
       console.log(pot);
       break;
@@ -248,7 +235,7 @@ const checkWinner = () => {
   if (dealerBlackjack) {
     console.log(`insurance`);
     payout('insurance');
-  }
+  };
   playerScore = 0;
   dealerScore = 0;
   hitBtn.classList.add('hidden');
@@ -280,9 +267,6 @@ const hitPlayer= () => {
     checkWinner();
   }
   showScore(playerHand, playerScore, pScoreDisplay);
-  insuranceBtn.disabled = true;
-  splitBtn.disabled = true;
-  doubleBtn.disabled = true;
 }
 
 const hitDealer = () => {
@@ -292,9 +276,9 @@ const hitDealer = () => {
       break;
     }
   }
-  insuranceBtn.disabled = true;
-  splitBtn.disabled = true;
-  doubleBtn.disabled = true;
+  insuranceBtn.classList.add('hidden');
+  splitBtn.classList.add('hidden');
+  doubleBtn.classList.add('hidden');
   checkWinner();
 }
 
@@ -308,6 +292,8 @@ const bet = (e) => {
   let amtBet = Number(e.target.dataset.amt);
   totalBet += amtBet;
   betAmtDisplay.textContent = `bet $${totalBet}`;
+  pot -= totalBet;
+  potDisplay.textContent = `Pot: $${pot}`;
   if (!totalBet > 0) {
     betBtn.disabled = true;
   } else {
@@ -317,8 +303,6 @@ const bet = (e) => {
 }
 
 const setBet = () => {
-  pot -= totalBet;
-  potDisplay.textContent = `Pot: $${pot}`;
   if (totalBet > 0) {
     //dealBtn.disabled = false;
     hitBtn.disabled = false;
@@ -328,7 +312,6 @@ const setBet = () => {
     window.alert(`You must place a bet.`);
   }
   clearBtn.disabled = true;
-  splitBtn.disabled = true;
 }
 
 const clearBet = () => {
@@ -340,26 +323,41 @@ const clearBet = () => {
 betBtn.addEventListener('click', setBet);
 clearBtn.addEventListener('click', clearBet);
 
-betNums.forEach(square => {
-  square.addEventListener('click', bet);
+betNums.forEach(button => {
+  button.addEventListener('click', bet);
 });
 
 const insurance = () => {
-  insuranceDisplay.textContent = `Insurance: $${totalBet/2} `;
-  totalBet += totalBet / 2;
+  insuranceBet = totalBet / 2;
+  pot -= insuranceBet;
+  if (String(insuranceBet).includes('.')) {
+    insuranceDisplay.textContent = `Insurance: $${insuranceBet}0`;
+    potDisplay.textContent = `Pot: $${pot}0`;
+  } else {
+    insuranceDisplay.textContent = `Insurance: $${insuranceBet} `;
+    potDisplay.textContent = `Pot: $${pot}`;
+  }
   if (dealerHand.length === 2 && ((dealerHand[0].value === 10 && dealerHand[1].value === 11) || (dealerHand[0].value === 11 && dealerHand[1].value === 10))) {
     dealerBlackjack = true;
   }
   insuranceBtn.classList.add('hidden');
 }
 
-//placeholder functions for later features
-insuranceBtn.addEventListener('click', insurance);
+const doubleDown = () => {
+  pot -= totalBet;
+  totalBet = totalBet * 2;
+  potDisplay.textContent = `Pot: $${pot}`;
+  betAmtDisplay.textContent = `bet $${totalBet}`;
+  doubleBtn.classList.add('hidden');
+  hit(playerHand, playerCards);
+  checkWinner();
+}
 
+insuranceBtn.addEventListener('click', insurance);
+doubleBtn.addEventListener('click', doubleDown);
+
+
+//placeholder for later features
 splitBtn.addEventListener('click', function() {
   splitBtn.classList.add('hidden');
 });
-
-doubleBtn.addEventListener('click', function() {
-  doubleBtn.classList.add('hidden');
-})
