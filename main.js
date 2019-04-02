@@ -1,23 +1,39 @@
+//grabbing DOM elements
 const table = document.querySelector('.game-table');
 const dealerCards = document.querySelector('.dealer-cards');
 const dealerImg = document.querySelector('#dealer');
 const playerCards = document.querySelector('.player-cards');
 const playerImg = document.querySelector('#player');
-const dealBtn = document.querySelector('#deal');
+//const dealBtn = document.querySelector('#deal');
 const hitBtn = document.querySelector('#hit');
 const standBtn = document.querySelector('#stand');
 const pScoreDisplay = document.querySelector('.player-score');
 const dScoreDisplay = document.querySelector('.dealer-score');
+const potDisplay = document.querySelector('.pot');
+const betAmtDisplay = document.querySelector('.bet-amt');
+const betBtn = document.querySelector('#bet');
+const betNums = document.querySelectorAll('.bet-num');
+const clearBtn = document.querySelector('#clear');
+const insuranceBtn = document.querySelector('#insurance');
+const splitBtn = document.querySelector('#split');
+const doubleBtn = document.querySelector('#double');
 
+
+//setting up variables
 let dealerHand = [];
 let playerHand = [];
 let dealerScore = 0;
 let playerScore = 0;
-
+let pot = 100;
+let totalBet = 0;
 const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'];
 const suits = ['C', 'D', 'H', 'S'];
 let deck = [];
 
+// display pot size
+potDisplay.textContent = `Pot: $${pot}`;
+
+//begin card setup
 const cardToRank = card => {
   if (card.isFaceCard()) {
     card.value = 10;
@@ -42,6 +58,7 @@ class Card {
 }
 
 const buildDeck = () => {
+  deck = [];
   for (let x = 0; x < 8; x++) {
     for (let i = 0; i < suits.length; i++) {
       for (let j = 0; j < values.length; j++) {
@@ -56,6 +73,8 @@ const buildDeck = () => {
 
 buildDeck();
 
+
+//begin putting the card in the DOM
 const display = (hand, div) => {
   div.innerHTML = null;
   for (let i = 0; i < hand.length; i++) {
@@ -79,7 +98,7 @@ const getScore = (hand, score) => {
         score = 0;
         hand[i].value = 1;
         getScore(hand, score);
-      //  console.log(score + ' ' +  hand[i].value + ` i'm an ace`);
+        // does not retroactively change Ace if it would be changed with a different draw order though. e.g., 4, 2, A, K counts as 27 when i think it should probably switch to 17 but maybe i should check with nana.
       }
     }
   }
@@ -90,6 +109,25 @@ const showScore = (hand, score, p) => {
   p.textContent = `${getScore(hand, score)}`;
 }
 
+
+//placeholder functions/buttons for later features
+const offerInsurance = () => {
+  if (dealerHand[1].num === 'A') {
+    insuranceBtn.style.display = 'inline-block';
+  };
+}
+
+const offerSplit = () => {
+  if (playerHand[0].num === playerHand[1].num) {
+    splitBtn.style.display = 'inline-block';
+  };
+}
+
+const offerDouble = () => {
+  doubleBtn.style.display = 'inline-block';
+}
+
+//deal
 const deal = () => {
   dealerHand = [];
   playerHand = [];
@@ -107,16 +145,42 @@ const deal = () => {
   display(dealerHand, dealerCards);
   display(playerHand, playerCards);
 
+  offerInsurance();
+  offerSplit();
+  offerDouble();
   dScoreDisplay.textContent = '';
   showScore(playerHand, playerScore, pScoreDisplay);
 
   hitBtn.classList.remove('hidden');
   standBtn.classList.remove('hidden');
-  dealBtn.disabled = true;
+  //dealBtn.disabled = true;
 
   return deck;
 };
 
+document.querySelector('#deal').addEventListener('click', deal);
+
+//setting up win evaluation and payout
+const payout = condition => {
+  switch (condition) {
+    case 'loss':
+      //pot += totalBet;
+      potDisplay.textContent = `Pot: $${pot}`;
+      console.log(pot);
+      break;
+    case 'win':
+      pot += 2 * totalBet;
+      potDisplay.textContent = `Pot: $${pot}`;
+      console.log(pot);
+      break;
+    case 'tie':
+      pot += totalBet;
+      potDisplay.textContent = `Pot: $${pot}`;
+      console.log(pot);
+      break;
+      // double check this tie payout. it might be paying out double.
+  }
+}
 
 const checkWinner = () => {
   showScore(playerHand, playerScore, pScoreDisplay);
@@ -124,40 +188,49 @@ const checkWinner = () => {
   dealerCards.firstChild.src = dealerHand[0].pic;
   playerScore = getScore(playerHand, playerScore, pScoreDisplay);
   dealerScore = getScore(dealerHand, dealerScore, dScoreDisplay);
+  // add blackjack wins and natural 21
   if (playerScore > 21) {
     console.log(`The house wins.`);
+    payout('loss');
+    console.log(`score > 21`);
   } else {
     if (dealerScore > 21) {
       console.log(`Player wins.`);
+      payout('win');
+      console.log(`dealer > 21`);
     } else {
       if (playerScore === dealerScore) {
         console.log(`Push!`);
+        payout('tie');
+        console.log(`tie`);
       } else if (playerScore > dealerScore) {
         console.log(`Player wins.`);
+        payout('win');
+        console.log(`player > dealer`);
       } else {
         console.log(`The house wins.`);
+        payout('loss');
+        console.log(`dealer > player`);
       }
     }
   }
-  playerHand.forEach(item => {
-    console.log(`${item.pic}, ${item.value}, player`);
-  });
-  dealerHand.forEach(item => {
-    console.log(`${item.pic}, ${item.value}, dealer`);
-  })
-
   playerScore = 0;
   dealerScore = 0;
   hitBtn.classList.add('hidden');
   standBtn.classList.add('hidden');
-  dealBtn.disabled = false;
+  //dealBtn.disabled = false;
 }
 
+
+//gameplay: hit or stand
 const hit = (hand, div) => {
     let newCard = deck[Math.floor(Math.random() * deck.length)];
     deck.splice(deck.indexOf(newCard), 1);
     hand.push(newCard);
     display(hand, div);
+    doubleBtn.style.display = 'none';
+    insuranceBtn.style.display = 'none';
+    splitBtn.style.display = 'none';
 };
 
 const hitPlayer= () => {
@@ -183,6 +256,63 @@ const hitDealer = () => {
   checkWinner();
 }
 
-dealBtn.addEventListener('click', deal);
+//dealBtn.addEventListener('click', deal);
 hitBtn.addEventListener('click', hitPlayer);
 stand.addEventListener('click', hitDealer);
+
+
+//gameplay: betting
+const bet = (e) => {
+  let amtBet = Number(e.target.dataset.amt);
+  totalBet += amtBet;
+  betAmtDisplay.textContent = `bet $${totalBet}`;
+  if (!totalBet > 0) {
+    betBtn.disabled = true;
+  } else {
+    betBtn.disabled = false;
+    clearBtn.disabled = false;
+  }
+}
+
+const confirmBet = () => {
+  pot -= totalBet;
+  potDisplay.textContent = `Pot: $${pot}`;
+  if (totalBet > 0) {
+    //dealBtn.disabled = false;
+    hitBtn.disabled = false;
+    standBtn.disabled = false;
+    deal();
+  }
+  clearBtn.disabled = true;
+}
+
+const clearBet = () => {
+  pot += totalBet;
+  totalBet = 0;
+  betAmtDisplay.textContent = `bet $${totalBet}`;
+  clearBtn.disabled = true;
+  // needs a bit of debugging too. if bet is cleared, sometimes bet will add the cleared amt to the pot.
+  // also clearBet should be reactivated after a payout
+}
+
+betBtn.addEventListener('click', confirmBet);
+clearBtn.addEventListener('click', clearBet);
+
+betNums.forEach(square => {
+  square.addEventListener('click', bet);
+});
+
+
+
+//placeholder functions for later features
+insuranceBtn.addEventListener('click', function() {
+  insuranceBtn.style.display = 'none';
+});
+
+splitBtn.addEventListener('click', function() {
+  splitBtn.style.display = 'none';
+});
+
+doubleBtn.addEventListener('click', function() {
+  doubleBtn.style.display = 'none';
+})

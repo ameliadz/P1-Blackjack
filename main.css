@@ -1,5 +1,11 @@
+body {
+  background-color: #2b570b;
+  /* change to a casino table background */
+  color: white;
+  font-family: sans-serif;
+}
+
 .game-table {
-  border: 1px solid black;
   width: 80%;
   max-width: 1000px;
   margin: 0 auto;
@@ -16,23 +22,31 @@ img {
   display: grid;
   justify-content: space-between;
   align-items: center;
-  grid-template-columns: 0.5fr 1.5fr;
-  border: 1px solid black;
+  grid-template-columns: 0.5fr 2fr;
 }
 
 .dealer-cards, .player-cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid black;
+  display: flex;
+  justify-content: flex-start;
 }
 
 p {
-  border: 1px solid black;
   font-size: 20pt;
 }
 
 .hidden {
   display: none;
+}
+
+button {
+  margin: 10px;
+  font-size: 10pt;
+}
+
+.question-btns {
+  display: none;
+}
+
+.bet {
+  border: 1px solid white;
 }
