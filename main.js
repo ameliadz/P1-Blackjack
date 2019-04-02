@@ -15,17 +15,19 @@ const clearBtn = document.querySelector('#clear');
 const insuranceBtn = document.querySelector('#insurance');
 const splitBtn = document.querySelector('#split');
 const doubleBtn = document.querySelector('#double');
+const insuranceDisplay = document.querySelector('.insurance');
 
 
 //setting up variables
 let dealerHand = [];
 let playerHand = [];
+let dealerBlackjack;
 let dealerScore = 0;
 let playerScore = 0;
 let pot = 100;
 let totalBet = 0;
-const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'J', 'Q', 'K', 'A'];
-const suits = ['C', 'D', 'H', 'S'];
+const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King', 'Ace'];
+const suits = ['Clubs', 'Diamonds', 'Hearts', 'Spades'];
 let deck = [];
 
 // display pot size
@@ -35,7 +37,7 @@ potDisplay.textContent = `Pot: $${pot}`;
 const cardToRank = card => {
   if (card.isFaceCard()) {
     card.value = 10;
-  } else if (card.value === 'A') {
+  } else if (card.value === 'Ace') {
     card.value = 11;
   }
 }
@@ -49,7 +51,7 @@ class Card {
     this.back = `images/gray_back.png`;
   }
   isFaceCard() {
-    if (this.value === 'J' || this.value === 'Q' || this.value === 'K') {
+    if (this.value === 'Jack' || this.value === 'Queen' || this.value === 'King') {
       return true;
     }
   }
@@ -88,20 +90,45 @@ const display = (hand, div) => {
   }
 }
 
+const valueAces = (hand, score) => {
+  for (let i = 0; i < hand.length; i++) {
+    if (hand[i].value === 11 && score > 21) {
+      hand[i].value = 1;
+      score = 0;
+      for (let j = 0; j < hand.length; j++) {
+        score += hand[j].value;
+      };
+    };
+  };
+  console.log(score);
+  return score;
+}
+
 const getScore = (hand, score) => {
   for (let i = 0; i < hand.length; i++) {
     score += hand[i].value;
-    if (score > 21) {
-      if (hand[i].value === 11) {
-        score = 0;
-        hand[i].value = 1;
-        getScore(hand, score);
-        // does not retroactively change Ace if it would be changed with a different draw order though. e.g., 4, 2, A, K counts as 27 when i think it should probably switch to 17 but maybe i should check with nana.
-      }
+    if (score > 20) {
+      valueAces(hand, score);
     }
   }
   return score;
 }
+
+// const getScore = (hand, score) => {
+//   for (let i = 0; i < hand.length; i++) {
+//     score += hand[i].value;
+//     if (score > 21) {
+//       if (hand[i].value === 11) {
+//         score = 0;
+//         hand[i].value = 1;
+//         getScore(hand, score);
+//         // does not retroactively change Ace if it would be changed with a different draw order though. e.g., 4, 2, A, K counts as 27 when i think it should probably switch to 17 but maybe i should check with nana.
+//         // should i maybe make the ace revaluing a separate function?
+//       }
+//     }
+//   }
+//   return score;
+// }
 
 const showScore = (hand, score, p) => {
   p.textContent = `${getScore(hand, score)}`;
@@ -110,7 +137,7 @@ const showScore = (hand, score, p) => {
 
 //placeholder functions/buttons for later features
 const offerInsurance = () => {
-  if (dealerHand[1].num === 'A') {
+  if (dealerHand[1].num === 'Ace') {
     insuranceBtn.classList.remove('hidden');
   };
 }
@@ -143,6 +170,11 @@ const deal = () => {
   display(dealerHand, dealerCards);
   display(playerHand, playerCards);
 
+  if ((playerHand[0].value === 10 && playerHand[1].value === 11) || (playerHand[0].value === 11 && playerHand[1].value === 10)) {
+    console.log(`Blackjack!`)
+    payout('blackjack');
+  };
+
   offerInsurance();
   offerSplit();
   offerDouble();
@@ -159,6 +191,9 @@ const deal = () => {
 //setting up win evaluation and payout
 const payout = condition => {
   switch (condition) {
+    case 'insurance':
+      pot += 2 * totalBet;
+      potDisplay.textContent = `Pot: $${pot}`;
     case 'loss':
       //pot += totalBet;
       potDisplay.textContent = `Pot: $${pot}`;
@@ -210,10 +245,15 @@ const checkWinner = () => {
       }
     }
   }
+  if (dealerBlackjack) {
+    console.log(`insurance`);
+    payout('insurance');
+  }
   playerScore = 0;
   dealerScore = 0;
   hitBtn.classList.add('hidden');
   standBtn.classList.add('hidden');
+  clearBtn.disabled = false;
   //dealBtn.disabled = false;
 }
 
@@ -240,15 +280,21 @@ const hitPlayer= () => {
     checkWinner();
   }
   showScore(playerHand, playerScore, pScoreDisplay);
+  insuranceBtn.disabled = true;
+  splitBtn.disabled = true;
+  doubleBtn.disabled = true;
 }
 
 const hitDealer = () => {
-  while (getScore(dealerHand, dealerScore) <= 17) {
+  while (getScore(dealerHand, dealerScore) < 17) {
     while (dealerHand.length < 5) {
       hit(dealerHand, dealerCards);
       break;
     }
   }
+  insuranceBtn.disabled = true;
+  splitBtn.disabled = true;
+  doubleBtn.disabled = true;
   checkWinner();
 }
 
@@ -270,7 +316,7 @@ const bet = (e) => {
   }
 }
 
-const confirmBet = () => {
+const setBet = () => {
   pot -= totalBet;
   potDisplay.textContent = `Pot: $${pot}`;
   if (totalBet > 0) {
@@ -278,32 +324,37 @@ const confirmBet = () => {
     hitBtn.disabled = false;
     standBtn.disabled = false;
     deal();
+  } else if (totalBet === 0) {
+    window.alert(`You must place a bet.`);
   }
   clearBtn.disabled = true;
+  splitBtn.disabled = true;
 }
 
 const clearBet = () => {
-  pot += totalBet;
   totalBet = 0;
   betAmtDisplay.textContent = `bet $${totalBet}`;
   clearBtn.disabled = true;
-  // needs a bit of debugging too. if bet is cleared, sometimes bet will add the cleared amt to the pot.
-  // also clearBet should be reactivated after a payout
 }
 
-betBtn.addEventListener('click', confirmBet);
+betBtn.addEventListener('click', setBet);
 clearBtn.addEventListener('click', clearBet);
 
 betNums.forEach(square => {
   square.addEventListener('click', bet);
 });
 
-
+const insurance = () => {
+  insuranceDisplay.textContent = `Insurance: $${totalBet/2} `;
+  totalBet += totalBet / 2;
+  if (dealerHand.length === 2 && ((dealerHand[0].value === 10 && dealerHand[1].value === 11) || (dealerHand[0].value === 11 && dealerHand[1].value === 10))) {
+    dealerBlackjack = true;
+  }
+  insuranceBtn.classList.add('hidden');
+}
 
 //placeholder functions for later features
-insuranceBtn.addEventListener('click', function() {
-  insuranceBtn.classList.add('hidden');
-});
+insuranceBtn.addEventListener('click', insurance);
 
 splitBtn.addEventListener('click', function() {
   splitBtn.classList.add('hidden');

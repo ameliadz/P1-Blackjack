@@ -20,6 +20,7 @@
       <button type="button" id="hit" class="hidden" disabled>Hit</button>
       <button type="button" id="stand" class="hidden" disabled>Stand</button>
       <div class="bet">
+        <button type="button" class="bet-num" data-amt="1">$1</button>
         <button type="button" class="bet-num" data-amt="5">$5</button>
         <button type="button" class="bet-num" data-amt="10">$10</button>
         <button type="button" class="bet-num" data-amt="25">$25</button>
@@ -27,15 +28,17 @@
         <button type="button" class="bet-num" data-amt="100">$100</button>
         <p class="pot"></p>
         <p class="bet-amt"></p>
+        <p class="insurance"></p>
         <button type="button" id="bet" disabled>Bet</button>
         <button type="button" id="clear" disabled>Clear bet</button>
         <button type="button" class="hidden" id="insurance">Insurance</button>
         <button type="button" class="hidden" id="split">Split</button>
         <button type="button" class="hidden" id="double">Double down</button>
         <!-- I'm not sure what the double down condition is -->
-        <!-- ooh maybe i want the bet buttons to be poker chips hmmmmmm can i gray 'em out if the pot is less than the value??'-->
+        <!-- ooh maybe i want the bet buttons to be poker chips hmm`mmmm can i gray 'em out if the pot is less than the value??'-->
+        <!-- should i do a modal onload with instructions that's potentially reopenable with a corner button? -->
       </div>
     </div>
-  <script src="main.js" type="text/javascript"></script>
+  <script src="test.js" type="text/javascript"></script>
   </body>
 </html>
