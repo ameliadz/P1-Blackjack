@@ -14,11 +14,13 @@
         <div class="dealer-cards"></div>
       </div>
       <div class="player">
-        <p class="player-score"></p>
-        <div class="player-cards"></div>
+        <div class="player-wrapper">
+          <p class="player-score"></p>
+          <button type="button" id="hit" class="hidden" disabled>Hit</button>
+          <button type="button" id="stand" class="hidden" disabled>Stand</button>
+        </div>
+          <div class="player-cards"></div>
       </div>
-      <button type="button" id="hit" class="hidden" disabled>Hit</button>
-      <button type="button" id="stand" class="hidden" disabled>Stand</button>
       <div class="bet">
         <button type="button" class="bet-num" data-amt="1">$1</button>
         <button type="button" class="bet-num" data-amt="5">$5</button>
@@ -31,9 +33,9 @@
         <p class="insurance"></p>
         <button type="button" id="bet" disabled>Bet</button>
         <button type="button" id="clear" disabled>Clear bet</button>
+        <button type="button" class="hidden" id="double">Double down</button>
         <button type="button" class="hidden" id="insurance">Insurance</button>
         <button type="button" class="hidden" id="split">Split</button>
-        <button type="button" class="hidden" id="double">Double down</button>
         <!-- I'm not sure what the double down condition is -->
         <!-- ooh maybe i want the bet buttons to be poker chips hmm`mmmm can i gray 'em out if the pot is less than the value??'-->
         <!-- should i do a modal onload with instructions that's potentially reopenable with a corner button? -->

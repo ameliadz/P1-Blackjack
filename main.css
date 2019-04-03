@@ -39,6 +39,11 @@ body {
   align-items: center;
 }
 
+.player-wrapper {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+
 .bet {
   grid-area: bet;
 }
@@ -51,6 +56,7 @@ img {
 
 .dealer-cards, .player-cards {
   display: flex;
+  max-width: 100%;
 }
 
 p {
@@ -58,7 +64,7 @@ p {
 }
 
 .hidden {
-  display: none;
+  visibility: hidden;
 }
 
 button {
