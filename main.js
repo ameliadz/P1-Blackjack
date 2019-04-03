@@ -148,18 +148,29 @@ const offerSplit = () => {
 };
 
 const offerDouble = () => {
-  doubleBtn.classList.remove('hidden');
-  doubleBtn.disabled = false;
+  if (pot >= totalBet) {
+    doubleBtn.classList.remove('hidden');
+    doubleBtn.disabled = false;
+  };
 }
 
 
-// ############# check blackjack ###############
+//############# check blackjack ###############
 const checkBlackjack = () => {
   if ((playerHand[0].value === 10 && playerHand[1].value === 11) || (playerHand[0].value === 11 && playerHand[1].value === 10)) {
-    outcome.textContent = 'Blackjack!';
+    outcome.textContent = `Blackjack!`;
+    console.log('blackjack');
     payout('blackjack');
   };
 }
+const flash = () => {
+  if (outcome.textContent === `Blackjack!`) {
+    outcome.classList.add('flash');
+  } else {
+    outcome.classList.remove('flash');
+  };
+}
+
 
 // ###################### deal #######################
 const deal = () => {
@@ -240,6 +251,7 @@ const payout = condition => {
       console.log(pot);
       break;
   }
+  flash();
   gameReset();
 }
 
@@ -280,7 +292,6 @@ const checkWinner = () => {
   // } else {
   //   console.log(`no insurance`);
   }
-  flash();
 }
 
 
@@ -350,8 +361,8 @@ const setBet = () => {
     betNums.forEach(button => {
       button.disabled = true;
     });
-    deal();
     outcome.textContent = '';
+    deal();
   } else if (totalBet === 0) {
     window.alert(`You must place a bet.`);
   }
@@ -406,18 +417,6 @@ const doubleDown = () => {
 
 insuranceBtn.addEventListener('click', insurance);
 doubleBtn.addEventListener('click', doubleDown);
-
-
-
-// flashy stuff
-
-const flash = () => {
-  if (outcome.textContent === 'Blackjack!') {
-    outcome.classList.add('flash');
-  } else {
-    outcome.classList.remove('flash');
-  }
-}
 
 
 // ######## placeholder for later features ########

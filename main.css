@@ -179,10 +179,16 @@ p {
   box-shadow: none;
 }
 
-.outcome {
-  transition: 0.1s ease-in-out infinite;
+.flash {
+  animation: flash 0.5s ease-in-out 5;
 }
 
-.flash {
-  color: yellow;
+@keyframes flash {
+  0% {
+    color: yellow;
+  }
+
+  100% {
+    color: white;
+  }
 }
