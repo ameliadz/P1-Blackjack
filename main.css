@@ -1,62 +1,90 @@
 body {
-  background-color: #2b570b;
-  /* change to a casino table background */
+  /* background-color: #2b570b; */
+  background-image: url('images/tablebg.png');
   color: white;
-  font-family: sans-serif;
+  font-family: 'Montserrat', sans-serif;
   height: 100%;
+  margin-bottom: 40px;
+}
+
+h1 {
+  text-align: center;
+  font-family: 'Limelight', sans-serif;
+  letter-spacing: 0.1em;
+  font-size: 30pt;
+  margin: 10px;
+  font-weight: normal;
 }
 
 .game-table {
   display: grid;
   grid-template-columns: 1fr 3fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: 260px auto 260px;
   grid-template-areas:
-    "dealer dealer bet"
-    "player player bet";
+    "scores cards bet"
+    "scores cards bet"
+    "scores cards bet";
   width: 80%;
-  max-width: 1000px;
   margin: 0 auto;
   text-align: center;
-}
-
-.dealer p, .player p {
-  display: inline-block;
-  flex: 1;
-}
-
-.dealer {
-  grid-area: dealer;
-}
-
-.player {
-  grid-area: player;
-}
-
-.dealer, .player {
+  align-items: center;
   justify-content: center;
+}
+
+.scores {
+  grid-area: scores;
+  grid-row: 1 / 4;
+  grid-column: 1 / 2;
   display: grid;
-  grid-template-columns: 1fr 4fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-areas:
+    "dscore"
+    "outcome"
+    "pscore";
+  justify-content: center;
   align-items: center;
 }
 
-.player-wrapper {
-  display: grid;
-  grid-template-columns: 1fr;
+.dealer-score {
+  grid-area: dscore;
+  grid-row: 1 / 2;
 }
 
-.bet {
-  grid-area: bet;
+.outcome {
+  grid-area: outcome;
+  grid-row: 2 / 3;
 }
 
-img {
-  max-height: 260px;
-  display: inline-block;
-  margin: 0 auto;
+.player-score {
+  grid-area: pscore;
+  grid-row: 3 / 4;
+}
+
+.cards {
+  grid-area: cards;
+}
+
+.hit-stand {
+  grid-column: 2 / 3;
+  grid-row: 2 / 3;
+}
+
+.hit-stand button {
+  width: 120px;
 }
 
 .dealer-cards, .player-cards {
   display: flex;
-  max-width: 100%;
+  justify-content: center;
+  height: 260px;
+}
+
+.card {
+  max-height: 260px;
+  max-width: 170px;
+  flex: 1;
+  display: inline-block;
+  margin: 0 auto;
 }
 
 p {
@@ -67,7 +95,16 @@ p {
   visibility: hidden;
 }
 
-button {
+.bet {
+  grid-area: bet;
+  grid-row: 1 / 4;
+}
+
+.extra {
+  width: 170px;
+}
+
+.otherbtn {
   margin: 10px;
   padding: 5px;
   font-size: 12pt;
@@ -76,18 +113,76 @@ button {
   border: 1px solid white;
   border-radius: 5px;
   transition: all 0.25s ease-in-out;
+  font-family: 'Montserrat', sans-serif;
+  letter-spacing: 0.05em;
 }
 
-button:hover {
+.otherbtn:hover {
   background-color: white;
   color: #2b570b;
 }
 
-button:disabled {
+.otherbtn:disabled {
   border: 1px solid rgba(255, 255, 255, 0.5);
   color: rgba(255, 255, 255, 0.5);
 }
 
-button:disabled:hover {
+.otherbtn:disabled:hover {
   background-color: #2b570b;
+}
+
+.bet-num {
+  width: 60px;
+  height: 60px;
+  margin: 5px;
+  transition: all 0.1s ease-in-out;
+  border: none;
+  border-radius: 50%;
+  background-size: cover;
+}
+
+#one {
+  background-image: url('images/1-chip.png');
+}
+
+#five {
+  background-image: url('images/5-chip.png');
+}
+
+#ten {
+  background-image: url('images/10-chip.png');
+}
+
+#twentyfive {
+  background-image: url('images/25-chip.png');
+}
+
+#fifty {
+  background-image: url('images/50-chip.png');
+}
+
+#hundred {
+  background-image: url('images/100-chip.png');
+}
+
+.bet-num:hover {
+  transform: scale(1.05);
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.bet-num:disabled {
+  opacity: 0.7;
+}
+
+.bet-num:disabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.outcome {
+  transition: 0.1s ease-in-out infinite;
+}
+
+.flash {
+  color: yellow;
 }
