@@ -1,8 +1,6 @@
-//grabbing DOM elements
-const table = document.querySelector('.game-table');
+// ################# grabbing DOM elements #############
 const dealerCards = document.querySelector('.dealer-cards');
 const playerCards = document.querySelector('.player-cards');
-//const dealBtn = document.querySelector('#deal');
 const hitBtn = document.querySelector('#hit');
 const standBtn = document.querySelector('#stand');
 const pScoreDisplay = document.querySelector('.player-score');
@@ -18,7 +16,7 @@ const doubleBtn = document.querySelector('#double');
 const insuranceDisplay = document.querySelector('.insurance');
 
 
-//setting up variables
+// ############### setting up variables #################
 let dealerHand = [];
 let playerHand = [];
 let dealerBlackjack = null;
@@ -31,15 +29,7 @@ const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King', 'Ace'];
 const suits = ['Clubs', 'Diamonds', 'Hearts', 'Spades'];
 let deck = [];
 
-//begin card setup
-const cardToRank = card => {
-  if (card.isFaceCard()) {
-    card.value = 10;
-  } else if (card.value === 'Ace') {
-    card.value = 11;
-  }
-}
-
+// ############### begin card setup ################
 class Card {
   constructor(num, suit, value, pic) {
     this.num = num;
@@ -52,6 +42,14 @@ class Card {
     if (this.value === 'Jack' || this.value === 'Queen' || this.value === 'King') {
       return true;
     }
+  }
+}
+
+const cardToRank = card => {
+  if (card.isFaceCard()) {
+    card.value = 10;
+  } else if (card.value === 'Ace') {
+    card.value = 11;
   }
 }
 
@@ -72,7 +70,7 @@ const buildDeck = () => {
 buildDeck();
 
 
-//begin putting the card in the DOM
+// ############ begin putting the card in the DOM ###########
 const display = (hand, div) => {
   div.innerHTML = null;
   for (let i = 0; i < hand.length; i++) {
@@ -88,6 +86,8 @@ const display = (hand, div) => {
   }
 }
 
+
+// ################### scoring hands #################
 const valueAces = (hand, score) => {
   for (let i = 0; i < hand.length; i++) {
     if (hand[i].value === 11 && score > 21) {
@@ -116,7 +116,7 @@ const showScore = (hand, score, p) => {
 }
 
 
-// display pot size
+// ############ display pot size #############
 const showPot = () => {
   if (String(pot).includes('.')) {
     potDisplay.textContent = `Pot: $${pot}0`;
@@ -147,6 +147,8 @@ const offerDouble = () => {
   doubleBtn.disabled = false;
 }
 
+
+// ############# check blackjack ###############
 const checkBlackjack = () => {
   if ((playerHand[0].value === 10 && playerHand[1].value === 11) || (playerHand[0].value === 11 && playerHand[1].value === 10)) {
     console.log(`Blackjack!`)
@@ -154,7 +156,7 @@ const checkBlackjack = () => {
   };
 }
 
-//deal
+// ###################### deal #######################
 const deal = () => {
   dealerHand = [];
   playerHand = [];
@@ -180,7 +182,6 @@ const deal = () => {
 
   hitBtn.classList.remove('hidden');
   standBtn.classList.remove('hidden');
-  //dealBtn.disabled = true;
 
   checkBlackjack();
 
@@ -202,7 +203,7 @@ const gameReset = () => {
   });
 };
 
-//setting up win evaluation and payout
+// ######### setting up win evaluation and payout ########
 const payout = condition => {
   switch (condition) {
     case 'insurance':
@@ -238,7 +239,6 @@ const checkWinner = () => {
   dealerCards.firstChild.src = dealerHand[0].pic;
   playerScore = getScore(playerHand, playerScore, pScoreDisplay);
   dealerScore = getScore(dealerHand, dealerScore, dScoreDisplay);
-  // add blackjack wins and natural 21
   if (playerScore > 21) {
     console.log(`The house wins.`);
     payout('loss');
@@ -268,11 +268,10 @@ const checkWinner = () => {
     console.log(`insurance`);
     payout('insurance');
   };
-  //dealBtn.disabled = false;
 }
 
 
-//gameplay: hit or stand
+// ############## gameplay: hit or stand ###########
 const hit = (hand, div) => {
     let newCard = deck[Math.floor(Math.random() * deck.length)];
     deck.splice(deck.indexOf(newCard), 1);
@@ -309,12 +308,11 @@ const hitDealer = () => {
   checkWinner();
 }
 
-//dealBtn.addEventListener('click', deal);
 hitBtn.addEventListener('click', hitPlayer);
 stand.addEventListener('click', hitDealer);
 
 
-//gameplay: betting
+// ############# gameplay: betting ###############
 const bet = (e) => {
   let amtBet = Number(e.target.dataset.amt);
   if (pot >= amtBet) {
@@ -333,7 +331,6 @@ const bet = (e) => {
 
 const setBet = () => {
   if (totalBet > 0) {
-    //dealBtn.disabled = false;
     hitBtn.disabled = false;
     standBtn.disabled = false;
     clearBtn.disabled = true;
@@ -363,7 +360,7 @@ betNums.forEach(button => {
 });
 
 
-//extra bets
+// ############## extra bets ##################
 const insurance = () => {
   insuranceBet = totalBet / 2;
   pot -= insuranceBet;
@@ -397,7 +394,7 @@ insuranceBtn.addEventListener('click', insurance);
 doubleBtn.addEventListener('click', doubleDown);
 
 
-//placeholder for later features
+// ######## placeholder for later features ########
 splitBtn.addEventListener('click', function() {
   splitBtn.classList.add('hidden');
 });
