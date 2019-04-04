@@ -11,11 +11,15 @@ const betAmtDisplay = document.querySelector('.bet-amt');
 const betBtn = document.querySelector('#bet');
 const betNums = document.querySelectorAll('.bet-num');
 const clearBtn = document.querySelector('#clear');
+const cashOutBtn = document.querySelector('#cash-out');
+const cashOutDisplay = document.querySelector('.cash-out');
 const insuranceBtn = document.querySelector('#insurance');
 const splitBtn = document.querySelector('#split');
 const doubleBtn = document.querySelector('#double');
 const insuranceDisplay = document.querySelector('.insurance');
 const extraBets = document.querySelectorAll('.extra');
+const modal = document.querySelector('.modal-bg');
+const closeBtn = document.querySelector('#close');
 
 
 // ############### setting up variables #################
@@ -66,6 +70,21 @@ const buildDeck = () => {
     }
     deck.forEach(cardToRank);
   }
+  // i found the shuffle function online: this is the Fisher-Yates Shuffle algorithm, it's on wikipedia so it seems like A Legit Thing, and i needed help figuring out how to shuffle an array without getting duplicate elements in my shuffled version.
+  const shuffle = (arr) => {
+    let currentIndex = arr.length;
+    let temporaryValue;
+    let randomIndex;
+    while (0 !== currentIndex) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex -= 1;
+      temporaryValue = arr[currentIndex];
+      arr[currentIndex] = arr[randomIndex];
+      arr[randomIndex] = temporaryValue;
+    }
+    return arr;
+  }
+  deck = shuffle(deck);
   return deck;
 }
 
@@ -134,7 +153,7 @@ betAmtDisplay.textContent = `Bet: $${totalBet}`;
 
 //placeholder functions/buttons for later features
 const offerInsurance = () => {
-  if (dealerHand[1].num === 'Ace') {
+  if (dealerHand[1].num === 'Ace' && pot >= (totalBet / 2)) {
     insuranceBtn.classList.remove('hidden');
     insuranceBtn.disabled = false;
   };
@@ -176,16 +195,17 @@ const flash = () => {
 const deal = () => {
   dealerHand = [];
   playerHand = [];
-  dealerCard1 = deck[Math.floor(Math.random() * deck.length)];
-  deck.splice(deck.indexOf(dealerCard1), 1);
-  dealerCard2 = deck[Math.floor(Math.random() * deck.length)];
-  deck.splice(deck.indexOf(dealerCard2), 1);
-  dealerHand.push(dealerCard1, dealerCard2);
-  playerCard1 = deck[Math.floor(Math.random() * deck.length)];
-  deck.splice(deck.indexOf(playerCard1), 1);
-  playerCard2 = deck[Math.floor(Math.random() * deck.length)];
-  deck.splice(deck.indexOf(playerCard2), 1);
-  playerHand.push(playerCard1, playerCard2);
+
+  const pickCard = (hand) => {
+    let card = deck[0];
+    deck.splice(0, 1);
+    hand.push(card);
+  }
+
+  pickCard(dealerHand);
+  pickCard(dealerHand);
+  pickCard(playerHand);
+  pickCard(playerHand);
 
   display(dealerHand, dealerCards);
   display(playerHand, playerCards);
@@ -383,6 +403,26 @@ betNums.forEach(button => {
   button.addEventListener('click', bet);
 });
 
+
+const cashOut = () => {
+  if (pot > 100) {
+    cashOutDisplay.textContent = `You made $${pot - 100}!`;
+  } else if (pot < 100) {
+    cashOutDisplay.textContent = `You lost $${100 - pot}.`;
+  } else {
+    cashOutDisplay.textContent = `You broke even!`;
+  }
+  modal.style.display = 'block';
+}
+cashOutBtn.addEventListener('click', cashOut);
+closeBtn.addEventListener('click', () => {
+  modal.style.display = 'none';
+  pot = 100;
+  showPot();
+  gameReset();
+  buildDeck();
+  // returns undefined instead of dealing if the deck runs out... fix this.
+})
 
 // ############## extra bets ##################
 const insurance = () => {
