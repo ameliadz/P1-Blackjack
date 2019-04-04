@@ -186,7 +186,7 @@ p {
 
 .modal-bg {
   display: none;
-  background-color: rgba(0, 0, 0, 0.3);
+  background-color: rgba(0, 0, 0, 0.4);
   position: fixed;
   top: 0;
   left: 0;
@@ -197,27 +197,34 @@ p {
 .modal-window {
   width: 30%;
   margin: 30vh auto;
-  padding: 30px;
-  background-color: white;
-  color: #2b570b;
+  padding: 30px 30px 0;
+  background-color: #2b570b;
+  color: white;
   border-radius: 15px;
+  border: 1px solid white;
   text-align: center;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
+}
+
+.cash-out {
+  font-size: 15pt;
+  padding-bottom: 0;
+  margin-bottom: 10px;
 }
 
 #close {
   position: relative;
-  top: -137px;
-  left: 239px;
+  transform: translateY(-350%);
+  left: 56%;
   height: 30px;
   width: 30px;
   border-radius: 50%;
   text-align: center;
-  border: none;
 }
 
 #close:hover {
-  border: 1px solid #2b570b;
-  color: #2b570b;
+  background-color: #214209;
+  color: white;
 }
 
 .flash {

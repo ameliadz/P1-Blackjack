@@ -192,6 +192,7 @@ const flash = () => {
 
 
 // ###################### deal #######################
+let shuffleNext = false;
 const deal = () => {
   dealerHand = [];
   playerHand = [];
@@ -220,6 +221,9 @@ const deal = () => {
   standBtn.classList.remove('hidden');
 
   checkBlackjack();
+  if (deck.length < 100) {
+    shuffleNext = true;
+  }
 
   return deck;
 };
@@ -236,12 +240,15 @@ const gameReset = () => {
   standBtn.classList.add('hidden');
   extraBets.forEach(button => {
     button.classList.add('hidden');
-  })
+  });
   clearBtn.disabled = true;
   betBtn.disabled = false;
   betNums.forEach(button => {
     button.disabled = false;
   });
+  if (shuffleNext) {
+    buildDeck();
+  };
 };
 
 // ######### setting up win evaluation and payout ########
@@ -421,7 +428,6 @@ closeBtn.addEventListener('click', () => {
   showPot();
   gameReset();
   buildDeck();
-  // returns undefined instead of dealing if the deck runs out... fix this.
 })
 
 // ############## extra bets ##################
