@@ -1,23 +1,33 @@
 // ################### grabbing DOM elements ####################
 const dealerCards = document.querySelector('.dealer-cards');
 const playerCards = document.querySelector('.player-cards');
+
 const hitBtn = document.querySelector('#hit');
 const standBtn = document.querySelector('#stand');
+
 const dScoreDisplay = document.querySelector('.dealer-score');
 const pScoreDisplay = document.querySelector('.player-score');
 const outcome = document.querySelector('.outcome');
+
 const potDisplay = document.querySelector('.pot');
 const betAmtDisplay = document.querySelector('.bet-amt');
+
 const betBtn = document.querySelector('#bet');
 const betNums = document.querySelectorAll('.bet-num');
 const clearBtn = document.querySelector('#clear');
+
 const cashOutBtn = document.querySelector('#cash-out');
 const cashOutDisplay = document.querySelector('.cash-out');
+
 const insuranceBtn = document.querySelector('#insurance');
 const splitBtn = document.querySelector('#split');
 const doubleBtn = document.querySelector('#double');
+
+const handCountDisplay = document.querySelector('.hand-count');
 const insuranceDisplay = document.querySelector('.insurance');
+
 const extraBets = document.querySelectorAll('.extra');
+
 const cashOutModal = document.querySelector('.cash-modal');
 const howModal = document.querySelector('.how-modal');
 const howToBtn = document.querySelector('#how-to');
@@ -47,6 +57,8 @@ const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King', 'Ace'];
 const suits = ['Clubs', 'Diamonds', 'Hearts', 'Spades'];
 let deck = [];
 let roundsPlayed = 0;
+let hands = [];
+let shuffleNext = false;
 
 // ####################### begin card setup #######################
 class Card {
@@ -98,6 +110,7 @@ const buildDeck = () => {
     return arr;
   }
   deck = shuffle(deck);
+  shuffleNext = false;
   return deck;
 }
 
@@ -137,6 +150,7 @@ const valueAces = (hand, score) => {
 }
 
 const getScore = (hand, score) => {
+  score = 0;
   for (let i = 0; i < hand.length; i++) {
     score += hand[i].value;
     if (score > 21) {
@@ -181,7 +195,7 @@ const offerDouble = () => {
 
 // ##### placeholder for later feature #######
 const offerSplit = () => {
-  if (playerHand[0].num === playerHand[1].num) {
+  if (pot >= totalBet && playerHand[0].num === playerHand[1].num) {
     splitBtn.classList.remove('hidden');
     splitBtn.disabled = false;
   };
@@ -191,6 +205,8 @@ const offerSplit = () => {
 //################### check blackjack #####################
 const checkBlackjack = () => {
   if ((playerHand[0].value === 10 && playerHand[1].value === 11) || (playerHand[0].value === 11 && playerHand[1].value === 10)) {
+    showScore(dealerHand, dealerScore, dScoreDisplay);
+    dealerCards.firstChild.src = dealerHand[0].pic;
     if ((dealerHand[0].value === 10 && dealerHand[1].value === 11) || (dealerHand[0].value === 11 && dealerHand[1].value === 10)) {
       console.log('both have blackjack');
       payout('tie');
@@ -198,6 +214,8 @@ const checkBlackjack = () => {
       outcome.textContent = `Blackjack!`;
       console.log('blackjack');
       payout('blackjack');
+      hitBtn.classList.add('hidden');
+      standBtn.classList.add('hidden');
     };
   };
 }
@@ -211,20 +229,31 @@ const flash = () => {
 
 
 // ############################ deal #############################
-let shuffleNext = false;
+
+const regularOptions = () => {
+  hitBtn.classList.remove('hidden');
+  standBtn.classList.remove('hidden');
+  checkBlackjack();
+  if (deck.length < 100) {
+    shuffleNext = true;
+  }
+}
+
+const pickCard = (hand) => {
+  let card = deck[0];
+  deck.splice(0, 1);
+  hand.push(card);
+}
+
 const deal = () => {
   dealerHand = [];
   playerHand = [];
 
-  const pickCard = (hand) => {
-    let card = deck[0];
-    deck.splice(0, 1);
-    hand.push(card);
-  }
   pickCard(dealerHand);
   pickCard(dealerHand);
   pickCard(playerHand);
   pickCard(playerHand);
+  hands.push(playerHand);
 
   display(dealerHand, dealerCards);
   display(playerHand, playerCards);
@@ -234,14 +263,8 @@ const deal = () => {
   offerDouble();
   dScoreDisplay.textContent = '';
   showScore(playerHand, playerScore, pScoreDisplay);
+  regularOptions();
 
-  hitBtn.classList.remove('hidden');
-  standBtn.classList.remove('hidden');
-
-  checkBlackjack();
-  if (deck.length < 100) {
-    shuffleNext = true;
-  }
 
   roundsPlayed++;
   return deck;
@@ -253,6 +276,8 @@ const gameReset = () => {
   dealerScore = 0;
   totalBet = 0;
   insuranceBet = 0;
+  hands = [];
+  handCountDisplay.textContent = '';
   betAmtDisplay.textContent = `Bet: $${totalBet}`;
   insuranceDisplay.textContent = '';
   showPot();
@@ -280,36 +305,46 @@ const payout = condition => {
       insuranceDisplay.textContent = '';
     case 'loss':
       showPot();
-      console.log(pot);
       break;
     case 'win':
       pot += 2 * totalBet;
       showPot();
-      console.log(pot);
       break;
     case 'tie':
       pot += totalBet;
       showPot();
-      console.log(pot);
       break;
     case 'blackjack':
       pot += 2.5 * totalBet;
       showPot();
-      console.log(pot);
       break;
   }
   flash();
-  gameReset();
+  console.log(hands.length);
+  if (hands.length > 1) {
+    console.log(hands);
+    console.log(`^ hands in payout`);
+    hands.shift();
+    console.log('hey-o');
+    handCountDisplay.textContent = `Hands in play: ${hands.length}`;
+    playerHand = [hands[0]];
+    console.log(playerHand);
+    hit(playerHand, playerCards);
+    console.log(`^ playerHand in payout`);
+    display(playerHand, playerCards);
+    showScore(playerHand, playerScore, pScoreDisplay);
+  } else {
+    console.log('oh no');
+    gameReset();
+  }
 }
 
 
 // ###################### check winner #########################
-const checkWinner = () => {
-  showScore(playerHand, playerScore, pScoreDisplay);
-  showScore(dealerHand, dealerScore, dScoreDisplay);
-  dealerCards.firstChild.src = dealerHand[0].pic;
-  playerScore = getScore(playerHand, playerScore, pScoreDisplay);
-  dealerScore = getScore(dealerHand, dealerScore, dScoreDisplay);
+const assess = () => {
+  playerScore = getScore(playerHand, playerScore);
+  dealerScore = getScore(dealerHand, dealerScore);
+  pScoreDisplay.textContent = playerScore;
   if (playerScore > 21) {
     outcome.textContent = `Bust! The house wins.`;
     payout('loss');
@@ -335,49 +370,85 @@ const checkWinner = () => {
       }
     }
   }
+}
+
+const checkWinner = () => {
+  console.log(playerHand);
+  console.log(`^playerHand in checkWinner`);
+  dealerCards.firstChild.src = dealerHand[0].pic;
+  showScore(dealerHand, dealerScore, dScoreDisplay);
+
+  assess();
+
   if (dealerBlackjack) {
-    // console.log('insurance');
     payout('insurance');
-  // } else {
-  //   console.log(`no insurance`);
   }
 }
 
 
 // ################### gameplay: hit or stand ########################
 const hit = (hand, div) => {
-    let newCard = deck[Math.floor(Math.random() * deck.length)];
-    deck.splice(deck.indexOf(newCard), 1);
-    hand.push(newCard);
-    display(hand, div);
-    extraBets.forEach(button => {
-      button.classList.add('hidden');
-    })
+  pickCard(hand);
+  display(hand, div);
+  extraBets.forEach(button => {
+    button.classList.add('hidden');
+  })
 };
 
-const hitPlayer= () => {
+const splitHit = () => {
+  if (hands.length > 1) {
+    console.log(`sh 1`);
+    assess();
+  } else {
+    console.log(`sh 2`);
+    playerHand = [hands[1]];
+    hit(playerHand, playerCards);
+    regularOptions();
+  }
+}
+
+const hitPlayer = () => {
   while (getScore(playerHand, playerScore) < 21) {
-    hit (playerHand, playerCards);
+    hit(playerHand, playerCards);
     break;
   }
   if (getScore(playerHand, playerScore) >= 21) {
-    checkWinner();
+    if (hands.length > 1) {
+      splitHit();
+      checkBlackjack();
+    } else {
+      checkWinner();
+    }
   }
   showScore(playerHand, playerScore, pScoreDisplay);
 }
 
-
 const hitDealer = () => {
-  while (getScore(dealerHand, dealerScore) < 17) {
-    while (dealerHand.length < 5) {
-      hit(dealerHand, dealerCards);
-      break;
+  if (hands.length > 1) {
+    splitHit();
+    console.log(`hd 1`);
+    checkBlackjack();
+  } else {
+    if (dealerHand.some(card => card.num === 'Ace')) {
+      while (getScore(dealerHand, dealerScore) <= 17) {
+        while (dealerHand.length < 5) {
+          hit(dealerHand, dealerCards);
+          break;
+        }
+      }
+    } else {
+      while (getScore(dealerHand, dealerScore) < 17) {
+        while (dealerHand.length < 5) {
+          hit(dealerHand, dealerCards);
+          break;
+        }
+      }
     }
+    extraBets.forEach(button => {
+      button.classList.add('hidden');
+    })
+    checkWinner();
   }
-  extraBets.forEach(button => {
-    button.classList.add('hidden');
-  })
-  checkWinner();
 }
 
 hitBtn.addEventListener('click', hitPlayer);
@@ -511,7 +582,28 @@ insuranceBtn.addEventListener('click', insurance);
 doubleBtn.addEventListener('click', doubleDown);
 
 
+const split = () => {
+  let totalSplitBet = totalBet * 2;
+  pot -= totalBet;
+  showPot();
+  betAmtDisplay.textContent = `Bet: $${totalSplitBet}`;
+  hands = [];
+  playerHand.forEach(card => {
+    if (card.num === 'Ace') {
+      card.value = 11;
+    }
+  });
+  hands.push(playerHand[0], playerHand[1]);
+  playerHand = [hands[0]];
+  hit(playerHand, playerCards);
+  showScore(playerHand, playerScore, pScoreDisplay);
+  handCountDisplay.textContent = `Hands in play: ${hands.length}`;
+
+  console.log(hands[0]);
+  console.log(hands[1]);
+
+  regularOptions();
+}
+
 // ######## placeholder for later features ########
-splitBtn.addEventListener('click', function() {
-  splitBtn.classList.add('hidden');
-});
+splitBtn.addEventListener('click', split);

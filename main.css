@@ -88,7 +88,7 @@ p {
   grid-area: cards;
 }
 
-.cards p {
+.name {
   margin: 5px;
   font-weight: normal;
   font-family: 'Limelight', sans-serif;
@@ -298,10 +298,10 @@ p {
 }
 
 .hand-count {
-  position: absolute;
+  /* position: absolute;
   bottom: 0;
-  right: 0;
-  font-size: 10pt;
-  margin: 5px;
+  right: 0; */
+  font-size: 12pt;
+  margin: 10px;
   font-family: 'Montserrat', sans-serif;
 }
