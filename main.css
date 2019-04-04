@@ -23,7 +23,7 @@ h1 {
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr 4fr 1fr;
-  grid-template-rows: 300px auto 300px;
+  grid-template-rows: 250px auto 250px;
   grid-template-areas:
     "scores cards bet"
     "scores cards bet"
@@ -103,7 +103,7 @@ p {
   margin: 10px auto 10px;
   display: flex;
   justify-content: center;
-  height: 260px;
+  height: 220px;
 }
 
 .hit-stand {
@@ -116,8 +116,8 @@ p {
 }
 
 .card {
-  max-height: 260px;
-  max-width: 170px;
+  max-height: 220px;
+  max-width: 144px;
   flex: 1;
   display: inline-block;
   margin: 0 auto;
@@ -146,6 +146,7 @@ p {
   transition: all 0.25s ease-in-out;
   font-family: 'Montserrat', sans-serif;
   letter-spacing: 0.05em;
+  text-align: center;
 }
 
 .button:hover {
@@ -294,4 +295,13 @@ p {
 #close2 {
   left: 54%;
   transform: translateY(-145%);
+}
+
+.hand-count {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  font-size: 10pt;
+  margin: 5px;
+  font-family: 'Montserrat', sans-serif;
 }
