@@ -1,4 +1,4 @@
-// ################# grabbing DOM elements #############
+// ################### grabbing DOM elements ####################
 const dealerCards = document.querySelector('.dealer-cards');
 const playerCards = document.querySelector('.player-cards');
 const hitBtn = document.querySelector('#hit');
@@ -25,7 +25,7 @@ const closeBtn = document.querySelector('#close');
 const closeBtn2 = document.querySelector('#close2');
 
 
-// ####### modal on load #######
+// ################## instructions modal #################
 howToBtn.addEventListener('click', () => {
   howModal.style.display = 'block';
 })
@@ -34,8 +34,7 @@ closeBtn2.addEventListener('click', () => {
 })
 
 
-
-// ############### setting up variables #################
+// ######################## setting up variables #######################
 let dealerHand = [];
 let playerHand = [];
 let dealerBlackjack = null;
@@ -48,7 +47,7 @@ const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King', 'Ace'];
 const suits = ['Clubs', 'Diamonds', 'Hearts', 'Spades'];
 let deck = [];
 
-// ############### begin card setup ################
+// ####################### begin card setup #######################
 class Card {
   constructor(num, suit, value, pic) {
     this.num = num;
@@ -83,7 +82,7 @@ const buildDeck = () => {
     }
     deck.forEach(cardToRank);
   }
-  // i found the shuffle function online: this is the Fisher-Yates Shuffle algorithm, it's on wikipedia so it seems like A Legit Thing, and i needed help figuring out how to shuffle an array without getting duplicate elements in my shuffled version.
+  // found the shuffle function online: this is the Fisher-Yates Shuffle algorithm, it's on wikipedia so it seems like A Legit Thing, and i needed help figuring out how to shuffle an array without getting duplicate elements in my shuffled version.
   const shuffle = (arr) => {
     let currentIndex = arr.length;
     let temporaryValue;
@@ -104,7 +103,7 @@ const buildDeck = () => {
 buildDeck();
 
 
-// ############ begin putting the card in the DOM ###########
+// ################# begin putting the card in the DOM ################
 const display = (hand, div) => {
   div.innerHTML = null;
   for (let i = 0; i < hand.length; i++) {
@@ -122,7 +121,7 @@ const display = (hand, div) => {
 }
 
 
-// ################### scoring hands #################
+// ######################## scoring hands ###########################
 const valueAces = (hand, score) => {
   for (let i = 0; i < hand.length; i++) {
     if (hand[i].value === 11 && score > 21) {
@@ -151,7 +150,7 @@ const showScore = (hand, score, p) => {
 }
 
 
-// ############ display pot size #############
+// ##################### display pot size #########################
 const showPot = () => {
   if (String(pot).includes('.')) {
     potDisplay.textContent = `Pot: $${pot}0`;
@@ -164,20 +163,13 @@ showPot();
 betAmtDisplay.textContent = `Bet: $${totalBet}`;
 
 
-//placeholder functions/buttons for later features
+// ############### conditionally offered extra bets ###############
 const offerInsurance = () => {
   if (dealerHand[1].num === 'Ace' && pot >= (totalBet / 2)) {
     insuranceBtn.classList.remove('hidden');
     insuranceBtn.disabled = false;
   };
 }
-
-const offerSplit = () => {
-  if (playerHand[0].num === playerHand[1].num) {
-    splitBtn.classList.remove('hidden');
-    splitBtn.disabled = false;
-  };
-};
 
 const offerDouble = () => {
   if (pot >= totalBet) {
@@ -186,13 +178,26 @@ const offerDouble = () => {
   };
 }
 
+// ##### placeholder for later feature #######
+const offerSplit = () => {
+  if (playerHand[0].num === playerHand[1].num) {
+    splitBtn.classList.remove('hidden');
+    splitBtn.disabled = false;
+  };
+};
 
-//############# check blackjack ###############
+
+//################### check blackjack #####################
 const checkBlackjack = () => {
   if ((playerHand[0].value === 10 && playerHand[1].value === 11) || (playerHand[0].value === 11 && playerHand[1].value === 10)) {
-    outcome.textContent = `Blackjack!`;
-    console.log('blackjack');
-    payout('blackjack');
+    if ((dealerHand[0].value === 10 && dealerHand[1].value === 11) || (dealerHand[0].value === 11 && dealerHand[1].value === 10)) {
+      console.log('both have blackjack');
+      payout('tie');
+    } else {
+      outcome.textContent = `Blackjack!`;
+      console.log('blackjack');
+      payout('blackjack');
+    };
   };
 }
 const flash = () => {
@@ -204,7 +209,7 @@ const flash = () => {
 }
 
 
-// ###################### deal #######################
+// ############################ deal #############################
 let shuffleNext = false;
 const deal = () => {
   dealerHand = [];
@@ -215,7 +220,6 @@ const deal = () => {
     deck.splice(0, 1);
     hand.push(card);
   }
-
   pickCard(dealerHand);
   pickCard(dealerHand);
   pickCard(playerHand);
