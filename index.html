@@ -8,6 +8,7 @@
   </head>
   <body>
     <h1>BLACKJACK</h1>
+    <button type="button" class="button" id="how-to">How to Play</button>
     <div class="game-table">
       <div class="scores">
         <p class="dealer-score"></p>
@@ -47,10 +48,23 @@
         <!-- should i do a modal on load with instructions that's potentially reopenable with a corner button? -->
       </div>
     </div>
-    <div class="modal-bg">
+    <div class="modal-bg how-modal">
+      <div class="modal-window">
+        <button type="button" class="button close" id="close2">X</button>
+        <p>How to Play Blackjack</p>
+        <ul>
+          <li>You will be dealt two cards initially. You may then choose to hit (be dealt another card) or stand (keep the cards you have).</li>
+          <li>Attempt to beat the dealer by getting a score as close to 21 as possible, without going over 21.</li>
+          <li>It is up to each individual player if an ace is worth 1 or 11. Face cards are 10 and numbered cards are their face value.</li>
+          <li>There's money at stake for each round! Don't lose! Blackjack pays out 3:2, insurance pays 2:1.</li>
+          <li>You may also choose to double down on any round (double your bet and be dealt one final card), or take insurance (bet an additional half-bet that the dealer has Blackjack) if the dealer's upcard is an Ace.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="modal-bg cash-modal">
       <div class="modal-window">
         <p class="cash-out"></p>
-        <button type="button" class="button" id="close">X</button>
+        <button type="button" class="button close" id="close">X</button>
       </div>
     </div>
   <script src="main.js" type="text/javascript"></script>

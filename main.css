@@ -6,6 +6,7 @@ body {
   margin-bottom: 40px;
 }
 
+/* ######################## header ######################## */
 h1 {
   text-align: center;
   font-family: 'Limelight', sans-serif;
@@ -15,6 +16,8 @@ h1 {
   font-weight: normal;
 }
 
+
+/* ############### everything except modals ############### */
 .game-table {
   width: 80%;
   margin: 0 auto;
@@ -30,6 +33,12 @@ h1 {
   justify-content: center;
 }
 
+p {
+  font-size: 20pt;
+}
+
+/* ################### internal grid ############### */
+/* ############## first column: scores ############ */
 .scores {
   grid-area: scores;
   grid-row: 1 / 4;
@@ -59,6 +68,22 @@ h1 {
   grid-row: 3 / 4;
 }
 
+/* ############## adding flashy stuff for win ############# */
+.flash {
+  animation: flash 0.5s ease-in-out 15;
+}
+
+@keyframes flash {
+  0% {
+    color: yellow;
+  }
+
+  100% {
+    color: white;
+  }
+}
+
+/* ############### second column: cards ############### */
 .cards {
   grid-area: cards;
 }
@@ -66,6 +91,12 @@ h1 {
 .cards p {
   margin: 5px;
   font-weight: normal;
+  font-family: 'Limelight', sans-serif;
+  letter-spacing: 0.1em;
+}
+
+.dealer-wrapper p {
+  margin-top: 10px;
 }
 
 .dealer-cards, .player-cards {
@@ -92,21 +123,15 @@ h1 {
   margin: 0 auto;
 }
 
-p {
-  font-size: 20pt;
-}
-
-.hidden {
-  visibility: hidden;
-}
-
+/* ################# third column: betting ############### */
 .bet {
   grid-area: bet;
   grid-row: 1 / 4;
 }
 
-.extra {
-  width: 170px;
+/* ############## various button stylings ############### */
+.hidden {
+  visibility: hidden;
 }
 
 .button {
@@ -136,6 +161,12 @@ p {
   background-color: #2b570b;
 }
 
+.extra {
+  width: 170px;
+}
+
+
+/* ################# specific poker chip styling ############# */
 .bet-num {
   width: 60px;
   height: 60px;
@@ -184,6 +215,9 @@ p {
   box-shadow: none;
 }
 
+
+/* ##################### MODAL STUFF ##################### */
+/* ###### applies to both and/or cash ######## */
 .modal-bg {
   display: none;
   background-color: rgba(0, 0, 0, 0.4);
@@ -206,13 +240,7 @@ p {
   box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.5);
 }
 
-.cash-out {
-  font-size: 15pt;
-  padding-bottom: 0;
-  margin-bottom: 10px;
-}
-
-#close {
+.close {
   position: relative;
   transform: translateY(-350%);
   left: 56%;
@@ -222,21 +250,47 @@ p {
   text-align: center;
 }
 
-#close:hover {
+.close:hover {
   background-color: #214209;
   color: white;
 }
 
-.flash {
-  animation: flash 0.5s ease-in-out 5;
+.cash-out {
+  font-size: 15pt;
+  padding-bottom: 0;
+  margin-bottom: 10px;
 }
 
-@keyframes flash {
-  0% {
-    color: yellow;
-  }
+/* ########### instructions modal ########### */
+#how-to {
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 8pt;
+  margin: 2px;
+}
 
-  100% {
-    color: white;
-  }
+.how-modal .modal-window {
+  padding: 20px;
+  margin: 20vh auto;
+}
+
+.how-modal p {
+  margin: 0;
+  margin-top: -10%;
+  font-family: 'Limelight', sans-serif;
+  letter-spacing: 0.1em;
+}
+
+.how-modal ul {
+  padding-left: 10%;
+  padding-right: 5%;
+  text-align: left;
+  line-height: 17pt;
+  letter-spacing: 0.05em;
+}
+
+#close2 {
+  left: 54%;
+  transform: translateY(-145%);
 }

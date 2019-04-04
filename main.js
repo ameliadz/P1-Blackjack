@@ -18,8 +18,21 @@ const splitBtn = document.querySelector('#split');
 const doubleBtn = document.querySelector('#double');
 const insuranceDisplay = document.querySelector('.insurance');
 const extraBets = document.querySelectorAll('.extra');
-const modal = document.querySelector('.modal-bg');
+const cashOutModal = document.querySelector('.cash-modal');
+const howModal = document.querySelector('.how-modal');
+const howToBtn = document.querySelector('#how-to');
 const closeBtn = document.querySelector('#close');
+const closeBtn2 = document.querySelector('#close2');
+
+
+// ####### modal on load #######
+howToBtn.addEventListener('click', () => {
+  howModal.style.display = 'block';
+})
+closeBtn2.addEventListener('click', () => {
+  howModal.style.display = 'none';
+})
+
 
 
 // ############### setting up variables #################
@@ -419,11 +432,11 @@ const cashOut = () => {
   } else {
     cashOutDisplay.textContent = `You broke even!`;
   }
-  modal.style.display = 'block';
+  cashOutModal.style.display = 'block';
 }
 cashOutBtn.addEventListener('click', cashOut);
 closeBtn.addEventListener('click', () => {
-  modal.style.display = 'none';
+  cashOutModal.style.display = 'none';
   pot = 100;
   showPot();
   gameReset();
