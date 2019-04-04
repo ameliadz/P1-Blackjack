@@ -1,4 +1,4 @@
-// ################# grabbing DOM elements #############
+// ################### grabbing DOM elements ####################
 const dealerCards = document.querySelector('.dealer-cards');
 const playerCards = document.querySelector('.player-cards');
 const hitBtn = document.querySelector('#hit');
@@ -11,14 +11,30 @@ const betAmtDisplay = document.querySelector('.bet-amt');
 const betBtn = document.querySelector('#bet');
 const betNums = document.querySelectorAll('.bet-num');
 const clearBtn = document.querySelector('#clear');
+const cashOutBtn = document.querySelector('#cash-out');
+const cashOutDisplay = document.querySelector('.cash-out');
 const insuranceBtn = document.querySelector('#insurance');
 const splitBtn = document.querySelector('#split');
 const doubleBtn = document.querySelector('#double');
 const insuranceDisplay = document.querySelector('.insurance');
 const extraBets = document.querySelectorAll('.extra');
+const cashOutModal = document.querySelector('.cash-modal');
+const howModal = document.querySelector('.how-modal');
+const howToBtn = document.querySelector('#how-to');
+const closeBtn = document.querySelector('#close');
+const closeBtn2 = document.querySelector('#close2');
 
 
-// ############### setting up variables #################
+// ################## instructions modal #################
+howToBtn.addEventListener('click', () => {
+  howModal.style.display = 'block';
+})
+closeBtn2.addEventListener('click', () => {
+  howModal.style.display = 'none';
+})
+
+
+// ######################## setting up variables #######################
 let dealerHand = [];
 let playerHand = [];
 let dealerBlackjack = null;
@@ -30,8 +46,9 @@ let insuranceBet = 0;
 const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King', 'Ace'];
 const suits = ['Clubs', 'Diamonds', 'Hearts', 'Spades'];
 let deck = [];
+let roundsPlayed = 0;
 
-// ############### begin card setup ################
+// ####################### begin card setup #######################
 class Card {
   constructor(num, suit, value, pic) {
     this.num = num;
@@ -66,7 +83,7 @@ const buildDeck = () => {
     }
     deck.forEach(cardToRank);
   }
-  // i found the shuffle function online: this is the Fisher-Yates Shuffle algorithm, it's on wikipedia so it seems like A Legit Thing, and i needed help figuring out how to shuffle an array without getting duplicate elements in my shuffled version.
+  // found the shuffle function online: this is the Fisher-Yates Shuffle algorithm, it's on wikipedia so it seems like A Legit Thing, and i needed help figuring out how to shuffle an array without getting duplicate elements in my shuffled version.
   const shuffle = (arr) => {
     let currentIndex = arr.length;
     let temporaryValue;
@@ -87,7 +104,7 @@ const buildDeck = () => {
 buildDeck();
 
 
-// ############ begin putting the card in the DOM ###########
+// ################# begin putting the card in the DOM ################
 const display = (hand, div) => {
   div.innerHTML = null;
   for (let i = 0; i < hand.length; i++) {
@@ -105,7 +122,7 @@ const display = (hand, div) => {
 }
 
 
-// ################### scoring hands #################
+// ######################## scoring hands ###########################
 const valueAces = (hand, score) => {
   for (let i = 0; i < hand.length; i++) {
     if (hand[i].value === 11 && score > 21) {
@@ -134,7 +151,7 @@ const showScore = (hand, score, p) => {
 }
 
 
-// ############ display pot size #############
+// ##################### display pot size #########################
 const showPot = () => {
   if (String(pot).includes('.')) {
     potDisplay.textContent = `Pot: $${pot}0`;
@@ -147,20 +164,13 @@ showPot();
 betAmtDisplay.textContent = `Bet: $${totalBet}`;
 
 
-//placeholder functions/buttons for later features
+// ############### conditionally offered extra bets ###############
 const offerInsurance = () => {
   if (dealerHand[1].num === 'Ace' && pot >= (totalBet / 2)) {
     insuranceBtn.classList.remove('hidden');
     insuranceBtn.disabled = false;
   };
 }
-
-const offerSplit = () => {
-  if (playerHand[0].num === playerHand[1].num) {
-    splitBtn.classList.remove('hidden');
-    splitBtn.disabled = false;
-  };
-};
 
 const offerDouble = () => {
   if (pot >= totalBet) {
@@ -169,13 +179,26 @@ const offerDouble = () => {
   };
 }
 
+// ##### placeholder for later feature #######
+const offerSplit = () => {
+  if (playerHand[0].num === playerHand[1].num) {
+    splitBtn.classList.remove('hidden');
+    splitBtn.disabled = false;
+  };
+};
 
-//############# check blackjack ###############
+
+//################### check blackjack #####################
 const checkBlackjack = () => {
   if ((playerHand[0].value === 10 && playerHand[1].value === 11) || (playerHand[0].value === 11 && playerHand[1].value === 10)) {
-    outcome.textContent = `Blackjack!`;
-    console.log('blackjack');
-    payout('blackjack');
+    if ((dealerHand[0].value === 10 && dealerHand[1].value === 11) || (dealerHand[0].value === 11 && dealerHand[1].value === 10)) {
+      console.log('both have blackjack');
+      payout('tie');
+    } else {
+      outcome.textContent = `Blackjack!`;
+      console.log('blackjack');
+      payout('blackjack');
+    };
   };
 }
 const flash = () => {
@@ -187,7 +210,8 @@ const flash = () => {
 }
 
 
-// ###################### deal #######################
+// ############################ deal #############################
+let shuffleNext = false;
 const deal = () => {
   dealerHand = [];
   playerHand = [];
@@ -197,7 +221,6 @@ const deal = () => {
     deck.splice(0, 1);
     hand.push(card);
   }
-
   pickCard(dealerHand);
   pickCard(dealerHand);
   pickCard(playerHand);
@@ -216,10 +239,15 @@ const deal = () => {
   standBtn.classList.remove('hidden');
 
   checkBlackjack();
+  if (deck.length < 100) {
+    shuffleNext = true;
+  }
 
+  roundsPlayed++;
   return deck;
 };
 
+// ############################ reset game ########################
 const gameReset = () => {
   playerScore = 0;
   dealerScore = 0;
@@ -232,15 +260,18 @@ const gameReset = () => {
   standBtn.classList.add('hidden');
   extraBets.forEach(button => {
     button.classList.add('hidden');
-  })
+  });
   clearBtn.disabled = true;
   betBtn.disabled = false;
   betNums.forEach(button => {
     button.disabled = false;
   });
+  if (shuffleNext) {
+    buildDeck();
+  };
 };
 
-// ######### setting up win evaluation and payout ########
+// ################# setting up win evaluation and payout ###############
 const payout = condition => {
   switch (condition) {
     case 'insurance':
@@ -271,6 +302,8 @@ const payout = condition => {
   gameReset();
 }
 
+
+// ###################### check winner #########################
 const checkWinner = () => {
   showScore(playerHand, playerScore, pScoreDisplay);
   showScore(dealerHand, dealerScore, dScoreDisplay);
@@ -311,7 +344,7 @@ const checkWinner = () => {
 }
 
 
-// ############## gameplay: hit or stand ###########
+// ################### gameplay: hit or stand ########################
 const hit = (hand, div) => {
     let newCard = deck[Math.floor(Math.random() * deck.length)];
     deck.splice(deck.indexOf(newCard), 1);
@@ -351,7 +384,7 @@ hitBtn.addEventListener('click', hitPlayer);
 stand.addEventListener('click', hitDealer);
 
 
-// ############# gameplay: betting ###############
+// ######################### gameplay: betting #######################
 const bet = (e) => {
   let amtBet = Number(e.target.dataset.amt);
   if (pot >= amtBet) {
@@ -399,6 +432,49 @@ betNums.forEach(button => {
   button.addEventListener('click', bet);
 });
 
+// ########################## cash out ##############################
+const cashOut = () => {
+
+  const evalPot = (a, b) => {
+    let result;
+    if (String(a - b).includes('.')) {
+      result = `${a - b}O`;
+    } else {
+      result = a - b;
+    }
+    return result;
+  };
+
+  if (pot > 100) {
+    if (roundsPlayed === 1) {
+      cashOutDisplay.textContent = `You made $${evalPot(pot, 100)} in ${roundsPlayed} round!`;
+    } else {
+      cashOutDisplay.textContent = `You made $${evalPot(pot, 100)} in ${roundsPlayed} rounds!`;
+    }
+  } else if (pot < 100) {
+    if (roundsPlayed === 1) {
+      cashOutDisplay.textContent = `You lost ${evalPot(100, pot)} in ${roundsPlayed} round.`
+    } else {
+      cashOutDisplay.textContent = `You lost $${evalPot(100, pot)} in ${roundsPlayed} rounds.`;
+    }
+  } else {
+    if (roundsPlayed === 1) {
+      cashOutDisplay.textContent = `You broke even in ${roundsPlayed} round.`
+    } else {
+      cashOutDisplay.textContent = `You broke even across ${roundsPlayed} rounds!`;
+    }
+  }
+  cashOutModal.style.display = 'block';
+}
+cashOutBtn.addEventListener('click', cashOut);
+closeBtn.addEventListener('click', () => {
+  cashOutModal.style.display = 'none';
+  pot = 100;
+  showPot();
+  gameReset();
+  buildDeck();
+  roundsPlayed = 0;
+});
 
 // ############## extra bets ##################
 const insurance = () => {

@@ -46,6 +46,7 @@ let insuranceBet = 0;
 const values = [2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King', 'Ace'];
 const suits = ['Clubs', 'Diamonds', 'Hearts', 'Spades'];
 let deck = [];
+let roundsPlayed = 0;
 
 // ####################### begin card setup #######################
 class Card {
@@ -242,9 +243,11 @@ const deal = () => {
     shuffleNext = true;
   }
 
+  roundsPlayed++;
   return deck;
 };
 
+// ############################ reset game ########################
 const gameReset = () => {
   playerScore = 0;
   dealerScore = 0;
@@ -268,7 +271,7 @@ const gameReset = () => {
   };
 };
 
-// ######### setting up win evaluation and payout ########
+// ################# setting up win evaluation and payout ###############
 const payout = condition => {
   switch (condition) {
     case 'insurance':
@@ -299,6 +302,8 @@ const payout = condition => {
   gameReset();
 }
 
+
+// ###################### check winner #########################
 const checkWinner = () => {
   showScore(playerHand, playerScore, pScoreDisplay);
   showScore(dealerHand, dealerScore, dScoreDisplay);
@@ -339,7 +344,7 @@ const checkWinner = () => {
 }
 
 
-// ############## gameplay: hit or stand ###########
+// ################### gameplay: hit or stand ########################
 const hit = (hand, div) => {
     let newCard = deck[Math.floor(Math.random() * deck.length)];
     deck.splice(deck.indexOf(newCard), 1);
@@ -379,7 +384,7 @@ hitBtn.addEventListener('click', hitPlayer);
 stand.addEventListener('click', hitDealer);
 
 
-// ############# gameplay: betting ###############
+// ######################### gameplay: betting #######################
 const bet = (e) => {
   let amtBet = Number(e.target.dataset.amt);
   if (pot >= amtBet) {
@@ -427,14 +432,37 @@ betNums.forEach(button => {
   button.addEventListener('click', bet);
 });
 
-
+// ########################## cash out ##############################
 const cashOut = () => {
+
+  const evalPot = (a, b) => {
+    let result;
+    if (String(a - b).includes('.')) {
+      result = `${a - b}O`;
+    } else {
+      result = a - b;
+    }
+    return result;
+  };
+
   if (pot > 100) {
-    cashOutDisplay.textContent = `You made $${pot - 100}!`;
+    if (roundsPlayed === 1) {
+      cashOutDisplay.textContent = `You made $${evalPot(pot, 100)} in ${roundsPlayed} round!`;
+    } else {
+      cashOutDisplay.textContent = `You made $${evalPot(pot, 100)} in ${roundsPlayed} rounds!`;
+    }
   } else if (pot < 100) {
-    cashOutDisplay.textContent = `You lost $${100 - pot}.`;
+    if (roundsPlayed === 1) {
+      cashOutDisplay.textContent = `You lost ${evalPot(100, pot)} in ${roundsPlayed} round.`
+    } else {
+      cashOutDisplay.textContent = `You lost $${evalPot(100, pot)} in ${roundsPlayed} rounds.`;
+    }
   } else {
-    cashOutDisplay.textContent = `You broke even!`;
+    if (roundsPlayed === 1) {
+      cashOutDisplay.textContent = `You broke even in ${roundsPlayed} round.`
+    } else {
+      cashOutDisplay.textContent = `You broke even across ${roundsPlayed} rounds!`;
+    }
   }
   cashOutModal.style.display = 'block';
 }
@@ -445,7 +473,8 @@ closeBtn.addEventListener('click', () => {
   showPot();
   gameReset();
   buildDeck();
-})
+  roundsPlayed = 0;
+});
 
 // ############## extra bets ##################
 const insurance = () => {
