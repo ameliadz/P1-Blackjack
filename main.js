@@ -13,7 +13,7 @@ const potDisplay = document.querySelector('.pot');
 const betAmtDisplay = document.querySelector('.bet-amt');
 
 const betBtn = document.querySelector('#bet');
-const betNums = document.querySelectorAll('.bet-num');
+
 const clearBtn = document.querySelector('#clear');
 
 const cashOutBtn = document.querySelector('#cash-out');
@@ -34,6 +34,26 @@ const howToBtn = document.querySelector('#how-to');
 const closeBtn = document.querySelector('#close');
 const closeBtn2 = document.querySelector('#close2');
 
+// ################### building bet amount buttons #####################
+const makeBetBtns = (id, dataAmt) => {
+  let btn = document.createElement('button');
+  btn.setAttribute('type', 'button');
+  btn.setAttribute('id', id);
+  btn.classList.add('bet-num');
+  btn.setAttribute('data-amt', dataAmt);
+  let bet = document.querySelector('.bet');
+  bet.insertBefore(btn, bet.firstElementChild);
+}
+
+makeBetBtns('hundred', 100);
+makeBetBtns('fifty', 50);
+makeBetBtns('twentyfive', 25);
+makeBetBtns('ten', 10);
+makeBetBtns('five', 5);
+makeBetBtns('one', 1);
+
+const betNums = document.querySelectorAll('.bet-num');
+
 
 // ################## instructions modal #################
 howToBtn.addEventListener('click', () => {
@@ -42,7 +62,6 @@ howToBtn.addEventListener('click', () => {
 closeBtn2.addEventListener('click', () => {
   howModal.style.display = 'none';
 })
-
 
 // ######################## setting up variables #######################
 let dealerHand = [];
@@ -208,11 +227,9 @@ const checkBlackjack = () => {
     showScore(dealerHand, dealerScore, dScoreDisplay);
     dealerCards.firstChild.src = dealerHand[0].pic;
     if ((dealerHand[0].value === 10 && dealerHand[1].value === 11) || (dealerHand[0].value === 11 && dealerHand[1].value === 10)) {
-      console.log('both have blackjack');
       payout('tie');
     } else {
       outcome.textContent = `Blackjack!`;
-      console.log('blackjack');
       payout('blackjack');
       hitBtn.classList.add('hidden');
       standBtn.classList.add('hidden');
@@ -320,21 +337,14 @@ const payout = condition => {
       break;
   }
   flash();
-  console.log(hands.length);
   if (hands.length > 1) {
-    console.log(hands);
-    console.log(`^ hands in payout`);
     hands.shift();
-    console.log('hey-o');
     handCountDisplay.textContent = `Hands in play: ${hands.length}`;
     playerHand = [hands[0]];
-    console.log(playerHand);
     hit(playerHand, playerCards);
-    console.log(`^ playerHand in payout`);
     display(playerHand, playerCards);
     showScore(playerHand, playerScore, pScoreDisplay);
   } else {
-    console.log('oh no');
     gameReset();
   }
 }
@@ -348,33 +358,26 @@ const assess = () => {
   if (playerScore > 21) {
     outcome.textContent = `Bust! The house wins.`;
     payout('loss');
-    console.log(`score > 21`);
   } else {
     if (dealerScore > 21) {
       outcome.textContent = `Dealer bust! Player wins.`;
       payout('win');
-      console.log(`dealer > 21`);
     } else {
       if (playerScore === dealerScore) {
         outcome.textContent = `Push!`;
         payout('tie');
-        console.log(`tie`);
       } else if (playerScore > dealerScore) {
         outcome.textContent = `Player wins!`;
         payout('win');
-        console.log(`player > dealer`);
       } else {
         outcome.textContent = `The house wins.`;
         payout('loss');
-        console.log(`dealer > player`);
       }
     }
   }
 }
 
 const checkWinner = () => {
-  console.log(playerHand);
-  console.log(`^playerHand in checkWinner`);
   dealerCards.firstChild.src = dealerHand[0].pic;
   showScore(dealerHand, dealerScore, dScoreDisplay);
 
@@ -397,10 +400,8 @@ const hit = (hand, div) => {
 
 const splitHit = () => {
   if (hands.length > 1) {
-    console.log(`sh 1`);
     assess();
   } else {
-    console.log(`sh 2`);
     playerHand = [hands[1]];
     hit(playerHand, playerCards);
     regularOptions();
@@ -426,7 +427,6 @@ const hitPlayer = () => {
 const hitDealer = () => {
   if (hands.length > 1) {
     splitHit();
-    console.log(`hd 1`);
     checkBlackjack();
   } else {
     if (dealerHand.some(card => card.num === 'Ace')) {
@@ -598,9 +598,6 @@ const split = () => {
   hit(playerHand, playerCards);
   showScore(playerHand, playerScore, pScoreDisplay);
   handCountDisplay.textContent = `Hands in play: ${hands.length}`;
-
-  console.log(hands[0]);
-  console.log(hands[1]);
 
   regularOptions();
 }
