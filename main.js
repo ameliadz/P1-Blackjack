@@ -417,7 +417,11 @@ const hitPlayer = () => {
       splitHit();
       checkBlackjack();
     } else {
-      checkWinner();
+      if (getScore(playerHand, playerScore === 21)) {
+        hitDealer();
+      } else {
+        checkWinner();
+      }
     }
   }
   showScore(playerHand, playerScore, pScoreDisplay);
