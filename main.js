@@ -226,7 +226,10 @@ const checkBlackjack = () => {
     showScore(dealerHand, dealerScore, dScoreDisplay);
     dealerCards.firstChild.src = dealerHand[0].pic;
     if ((dealerHand[0].value === 10 && dealerHand[1].value === 11) || (dealerHand[0].value === 11 && dealerHand[1].value === 10)) {
+      outcome.textContent = `Push!`;
       payout('tie');
+      hitBtn.classList.add('hidden');
+      standBtn.classList.add('hidden');
     } else {
       outcome.textContent = `Blackjack!`;
       payout('blackjack');
@@ -417,7 +420,7 @@ const hitPlayer = () => {
       splitHit();
       checkBlackjack();
     } else {
-      if (getScore(playerHand, playerScore === 21)) {
+      if (getScore(playerHand, playerScore) === 21) {
         hitDealer();
       } else {
         checkWinner();
