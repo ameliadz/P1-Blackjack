@@ -212,7 +212,6 @@ const offerDouble = () => {
   };
 }
 
-// ##### placeholder for later feature #######
 const offerSplit = () => {
   if (pot >= totalBet && playerHand[0].num === playerHand[1].num) {
     splitBtn.classList.remove('hidden');
