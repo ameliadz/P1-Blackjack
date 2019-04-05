@@ -578,10 +578,6 @@ const doubleDown = () => {
   }
 }
 
-insuranceBtn.addEventListener('click', insurance);
-doubleBtn.addEventListener('click', doubleDown);
-
-
 const split = () => {
   let totalSplitBet = totalBet * 2;
   pot -= totalBet;
@@ -602,5 +598,6 @@ const split = () => {
   regularOptions();
 }
 
-// ######## placeholder for later features ########
+insuranceBtn.addEventListener('click', insurance);
+doubleBtn.addEventListener('click', doubleDown);
 splitBtn.addEventListener('click', split);
